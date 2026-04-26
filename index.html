@@ -1,0 +1,2001 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<meta name="color-scheme" content="light">
+<meta name="supported-color-schemes" content="light">
+<meta name="theme-color" content="#D85A30">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="BuchstabenBattle">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="apple-touch-icon-precomposed" href="icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="manifest" href="manifest.json">
+<title>BuchstabenBattle</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@700;800&family=DM+Sans:ital,wght@0,400;0,500;1,400&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --orange: #D85A30;
+    --orange-dark: #993C1D;
+    --orange-light: #FAECE7;
+    --orange-border: #F0997B;
+    --bg: #F7F4EF;
+    --surface: #FFFFFF;
+    --surface2: #F0EDE8;
+    --border: rgba(0,0,0,0.1);
+    --border-strong: rgba(0,0,0,0.2);
+    --text: #1A1714;
+    --text-muted: #6B6560;
+    --green: #3B6D11;
+    --green-bg: #EAF3DE;
+    --red: #A32D2D;
+    --red-bg: #FCEBEB;
+    --blue: #185FA5;
+    --blue-bg: #E6F1FB;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    padding: 0 0 4rem;
+  }
+
+  /* Scrollbar style */
+  ::-webkit-scrollbar { width: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 2px; }
+
+  .app {
+    width: 100%;
+    max-width: 480px;
+    padding: 0 1rem;
+  }
+
+  /* ── START SCREEN ── */
+
+  #s-start {
+    padding-top: 1.25rem;
+  }
+
+  /* Floating letter background animation */
+  @keyframes floatLetter {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-12px) rotate(-2deg); }
+    66% { transform: translateY(-6px) rotate(2deg); }
+  }
+
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes scaleIn {
+    from { opacity: 0; transform: scale(0.92); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  /* ── HERO BLOCK ── */
+  .hero {
+    position: relative;
+    background: var(--text);
+    border-radius: 24px;
+    padding: 0;
+    margin-bottom: 0.75rem;
+    overflow: hidden;
+    animation: scaleIn 0.5s ease both;
+  }
+
+  .hero-bg-letters {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    overflow: hidden;
+    gap: 0;
+  }
+
+  .hero-letter {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(3.5rem, 13vw, 6rem);
+    font-weight: 800;
+    color: rgba(255,255,255,0.05);
+    line-height: 1;
+    user-select: none;
+    flex-shrink: 0;
+    animation: floatLetter 4s ease-in-out infinite;
+  }
+
+  .hero-letter:nth-child(1) { animation-delay: 0s; }
+  .hero-letter:nth-child(2) { animation-delay: 0.5s; }
+  .hero-letter:nth-child(3) { animation-delay: 1s; }
+  .hero-letter:nth-child(4) { animation-delay: 1.5s; }
+  .hero-letter:nth-child(5) { animation-delay: 2s; }
+
+  .hero-top {
+    position: relative;
+    z-index: 2;
+    padding: 2.25rem 1.75rem 1.5rem;
+    text-align: center;
+    border-bottom: 1px solid rgba(255,255,255,0.07);
+  }
+
+  /* Animated badge */
+  .hero-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    background: rgba(216,90,48,0.2);
+    border: 1px solid rgba(216,90,48,0.35);
+    color: #f0957a;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 4px 10px;
+    border-radius: 99px;
+    margin-bottom: 1rem;
+    animation: fadeInUp 0.4s 0.1s ease both;
+  }
+
+  .hero-tag-dot {
+    width: 5px; height: 5px;
+    border-radius: 50%;
+    background: var(--orange);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.7); }
+  }
+
+  .hero-title {
+    font-family: 'Syne', sans-serif;
+    font-size: clamp(2rem, 9vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -1.5px;
+    line-height: 1.0;
+    margin-bottom: 0.4rem;
+    animation: fadeInUp 0.4s 0.15s ease both;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .title-white { color: white; display: block; }
+  .title-orange { color: var(--orange); display: block; }
+
+  .hero-title span { color: var(--orange); }
+
+  .hero-sub {
+    font-size: 12px;
+    color: rgba(255,255,255,0.4);
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    animation: fadeInUp 0.4s 0.2s ease both;
+  }
+
+  /* ── HERO BUTTONS ── */
+  .hero-actions {
+    position: relative;
+    z-index: 2;
+    padding: 1.25rem 1.75rem 1.5rem;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    animation: fadeInUp 0.4s 0.25s ease both;
+  }
+
+  .hero-btn {
+    padding: 1rem 1rem;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(0.34, 1.56, 0.64, 1);
+    border: none;
+    min-height: 60px;
+    -webkit-tap-highlight-color: transparent;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    gap: 1px;
+  }
+
+  .hero-btn-icon {
+    font-size: 1.1rem;
+    margin-bottom: 3px;
+    display: block;
+  }
+
+  .hero-btn-label { font-size: 14px; font-weight: 700; display: block; }
+  .hero-btn-desc { font-size: 11px; opacity: 0.65; font-weight: 400; display: block; }
+
+  .hero-btn-primary {
+    background: var(--orange);
+    color: white;
+  }
+  .hero-btn-primary:hover { background: var(--orange-dark); transform: translateY(-3px) scale(1.02); box-shadow: 0 8px 24px rgba(216,90,48,0.35); }
+  .hero-btn-primary:active { transform: scale(0.96); }
+
+  .hero-btn-secondary {
+    background: rgba(255,255,255,0.09);
+    color: white;
+    border: 1px solid rgba(255,255,255,0.13);
+  }
+  .hero-btn-secondary:hover { background: rgba(255,255,255,0.15); transform: translateY(-3px) scale(1.02); }
+  .hero-btn-secondary:active { transform: scale(0.96); }
+
+  /* ── HOW TO PLAY – NUMBERED STEPS ── */
+  .how-strip {
+    animation: fadeInUp 0.4s 0.3s ease both;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .how-title {
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 0.9rem;
+    padding: 0;
+  }
+
+  .how-steps {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+  }
+
+  .how-step {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 0.7rem 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .how-step:last-child { border-bottom: none; }
+
+  .how-step-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 0.75rem;
+    font-weight: 800;
+    color: var(--orange);
+    background: var(--orange-light);
+    border: 1.5px solid var(--orange-border);
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .how-step-icon {
+    font-size: 1.3rem;
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    background: var(--surface2);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .how-step-text { flex: 1; min-width: 0; }
+
+  .how-step-label {
+    font-size: 13.5px;
+    font-weight: 700;
+    color: var(--text);
+    display: block;
+    line-height: 1.2;
+  }
+
+  .how-step-desc {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    display: block;
+    margin-top: 2px;
+    line-height: 1.4;
+  }
+
+  .how-step-pts {
+    font-family: 'Syne', sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--orange);
+    background: var(--orange-light);
+    border: 1px solid var(--orange-border);
+    padding: 5px 9px;
+    border-radius: 8px;
+    flex-shrink: 0;
+    text-align: center;
+    line-height: 1.4;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1px;
+  }
+
+  .pts-main { font-size: 11px; font-weight: 800; color: var(--orange); }
+  .pts-sub { font-size: 9.5px; font-weight: 500; color: var(--text-muted); }
+
+  /* ── OFFLINE BLOCK – big prominent card ── */
+  .offline-block {
+    background: var(--text);
+    border-radius: var(--radius);
+    padding: 1.4rem 1.5rem;
+    cursor: pointer;
+    transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-bottom: 0.75rem;
+    -webkit-tap-highlight-color: transparent;
+    animation: fadeInUp 0.4s 0.35s ease both;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .offline-block::before {
+    content: 'OFFLINE';
+    position: absolute;
+    right: -10px;
+    top: 50%;
+    transform: translateY(-50%) rotate(-12deg);
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    color: rgba(255,255,255,0.04);
+    pointer-events: none;
+    letter-spacing: -1px;
+    white-space: nowrap;
+  }
+
+  .offline-block:hover { transform: translateY(-3px); box-shadow: 0 10px 32px rgba(0,0,0,0.25); }
+  .offline-block:active { transform: scale(0.97); }
+
+  .offline-block-icon {
+    font-size: 1.8rem;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.12);
+    width: 56px;
+    height: 56px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255,255,255,0.1);
+  }
+
+  .offline-block-body { flex: 1; min-width: 0; }
+
+  .offline-block-tag {
+    display: inline-block;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.45);
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    padding: 2px 7px;
+    border-radius: 99px;
+    margin-bottom: 4px;
+  }
+
+  .offline-block-title {
+    font-family: 'Syne', sans-serif;
+    font-weight: 800;
+    font-size: 1.05rem;
+    color: white;
+    display: block;
+    margin-bottom: 3px;
+  }
+
+  .offline-block-desc {
+    font-size: 11.5px;
+    color: rgba(255,255,255,0.45);
+    display: block;
+    line-height: 1.4;
+  }
+
+  .offline-block-arrow {
+    color: rgba(255,255,255,0.35);
+    font-size: 1.1rem;
+    font-family: 'Syne', sans-serif;
+    font-weight: 700;
+    transition: transform 0.15s, color 0.15s;
+    flex-shrink: 0;
+    background: rgba(255,255,255,0.08);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .offline-block:hover .offline-block-arrow { transform: translateX(4px); color: var(--orange); background: rgba(216,90,48,0.2); }
+
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  .card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .label {
+    font-size: 10px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--text-muted);
+    margin-bottom: 0.75rem;
+  }
+
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 99px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    padding: 12px 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 16px; /* 16px prevents iOS zoom */
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    transition: border-color 0.15s;
+    -webkit-appearance: none;
+  }
+
+  input[type="text"]:focus { border-color: var(--orange); background: var(--surface); }
+
+  select {
+    padding: 10px 12px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-sm);
+    background: var(--surface2);
+    color: var(--text);
+    font-size: 15px;
+    font-family: 'DM Sans', sans-serif;
+    outline: none;
+    -webkit-appearance: none;
+    appearance: none;
+    min-width: 110px;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 13px 20px;
+    border-radius: var(--radius-sm);
+    font-size: 15px;
+    font-weight: 500;
+    font-family: 'DM Sans', sans-serif;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    text-decoration: none;
+    min-height: 48px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .btn:hover { background: var(--surface2); }
+  .btn:active { transform: scale(0.97); }
+
+  .btn-primary {
+    background: var(--orange);
+    border-color: var(--orange);
+    color: white;
+  }
+
+  .btn-primary:hover { background: var(--orange-dark); border-color: var(--orange-dark); }
+
+  .btn-block { width: 100%; display: flex; }
+
+  .btn-row {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 1rem;
+  }
+
+  .big-letter {
+    font-family: 'Syne', sans-serif;
+    font-size: 7rem;
+    font-weight: 800;
+    color: var(--orange);
+    text-align: center;
+    line-height: 1;
+    padding: 1.5rem 0 1rem;
+  }
+
+  .timer-wrap {
+    text-align: center;
+    margin-bottom: 0.5rem;
+  }
+
+  .timer-num {
+    font-family: 'Syne', sans-serif;
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--text);
+    transition: color 0.3s;
+  }
+
+  .timer-num.urgent { color: var(--red); }
+
+  .progress {
+    height: 4px;
+    background: var(--surface2);
+    border-radius: 2px;
+    overflow: hidden;
+    margin-bottom: 1.5rem;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--orange);
+    border-radius: 2px;
+    transition: width 1s linear;
+  }
+
+  .row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .row:last-child { border-bottom: none; }
+
+  .answer-grid {
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+  }
+
+  .answer-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .player-tabs {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+    margin-bottom: 8px;
+  }
+
+  .tab {
+    padding: 5px 14px;
+    border-radius: 99px;
+    border: 1px solid var(--border-strong);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--surface);
+  }
+
+  .tab.active {
+    background: var(--orange-light);
+    border-color: var(--orange);
+    color: var(--orange-dark);
+    font-weight: 500;
+  }
+
+  .tab.done { opacity: 0.5; }
+
+  .scoreboard-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border);
+    gap: 12px;
+  }
+
+  .scoreboard-row:last-child { border-bottom: none; }
+
+  .rank {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: var(--orange);
+    width: 24px;
+    flex-shrink: 0;
+  }
+
+  .toggle-verdict {
+    padding: 4px 12px;
+    border-radius: 99px;
+    font-size: 12px;
+    cursor: pointer;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+
+  .verdict-ok { background: var(--green-bg); border-color: var(--green); color: var(--green); }
+  .verdict-fail { background: var(--red-bg); border-color: var(--red); color: var(--red); }
+
+  .cat-chip {
+    padding: 6px 12px;
+    border-radius: 99px;
+    border: 1px solid var(--border-strong);
+    font-size: 13px;
+    cursor: pointer;
+    background: var(--surface);
+    transition: all 0.15s;
+    user-select: none;
+  }
+
+  .cat-chip:hover { background: var(--surface2); }
+  .cat-chip.sel { background: var(--orange-light); border-color: var(--orange); color: var(--orange-dark); font-weight: 500; }
+
+  .cat-wrap { display: flex; flex-wrap: wrap; gap: 6px; }
+
+  .lobby-code {
+    font-family: 'Syne', sans-serif;
+    font-size: 3.5rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
+    color: var(--orange);
+    text-align: center;
+    padding: 1rem 0;
+  }
+
+  .player-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+
+  .status-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #ccc;
+    flex-shrink: 0;
+  }
+
+  .status-dot.online { background: #3B6D11; }
+  .status-dot.ready { background: var(--orange); }
+
+  .spinner {
+    display: inline-block;
+    width: 16px; height: 16px;
+    border: 2px solid var(--border);
+    border-top-color: var(--orange);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    flex-shrink: 0;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .loading-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 1rem;
+    color: var(--text-muted);
+    font-size: 14px;
+  }
+
+  .ki-badge {
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--blue-bg);
+    color: var(--blue);
+    font-weight: 500;
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .double-badge {
+    font-size: 9px;
+    padding: 2px 5px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--text-muted);
+    margin-left: 4px;
+    vertical-align: middle;
+  }
+
+  .reason-text {
+    font-size: 11px;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-top: 2px;
+  }
+
+  .winner-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.5rem;
+    font-weight: 800;
+    text-align: center;
+    margin-bottom: 4px;
+  }
+
+  .empty { text-align: center; color: var(--text-muted); font-size: 14px; padding: 1rem 0; }
+
+  /* Point stepper */
+  .pts-stepper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .stepper-btn {
+    width: 36px; height: 36px;
+    border-radius: 50%;
+    border: 1.5px solid var(--border-strong);
+    background: var(--surface);
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.15s;
+    -webkit-tap-highlight-color: transparent;
+    flex-shrink: 0;
+  }
+  .stepper-btn:hover { background: var(--surface2); }
+  .stepper-btn:active { transform: scale(0.9); }
+  .stepper-val {
+    font-family: 'Syne', sans-serif;
+    font-size: 1.2rem;
+    font-weight: 800;
+    color: var(--orange);
+    min-width: 44px;
+    text-align: center;
+  }
+  .stepper-val.zero { color: var(--text-muted); }
+
+  .player-setup-pill {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    margin-bottom: 6px;
+    font-size: 14px;
+  }
+  .player-setup-pill .del-btn {
+    background: none; border: none; cursor: pointer;
+    color: var(--text-muted); font-size: 1rem; padding: 2px 4px;
+    transition: color 0.15s;
+  }
+  .player-setup-pill .del-btn:hover { color: var(--red); }
+
+  .divider {
+    text-align: center;
+    color: var(--text-muted);
+    font-size: 12px;
+    margin: 0.75rem 0;
+    position: relative;
+  }
+
+  .divider::before, .divider::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    width: 40%;
+    height: 1px;
+    background: var(--border);
+  }
+
+  .divider::before { left: 0; }
+  .divider::after { right: 0; }
+
+  .inline-row { display: flex; gap: 8px; }
+  .flex-1 { flex: 1; }
+
+  .offline-letter-big {
+    font-family: 'Syne', sans-serif;
+    font-size: 8rem;
+    font-weight: 800;
+    color: var(--orange);
+    text-align: center;
+    display: block;
+    padding: 1rem 0;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    margin-bottom: 0.75rem;
+  }
+
+  @media (max-width: 400px) {
+    .big-letter { font-size: 4.5rem; }
+    .lobby-code { font-size: 2.2rem; letter-spacing: 0.12em; }
+    .app { padding: 0 0.75rem; }
+    .card { padding: 1rem; }
+  }
+
+  /* Force light mode always */
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #F7F4EF;
+      --surface: #FFFFFF;
+      --surface2: #F0EDE8;
+      --border: rgba(0,0,0,0.1);
+      --border-strong: rgba(0,0,0,0.2);
+      --text: #1A1714;
+      --text-muted: #6B6560;
+    }
+    body { background: #F7F4EF; color: #1A1714; }
+  }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- ── START ── -->
+  <div class="screen active" id="s-start">
+
+    <!-- HERO -->
+    <div class="hero">
+      <div class="hero-bg-letters">
+        <span class="hero-letter">S</span>
+        <span class="hero-letter">T</span>
+        <span class="hero-letter">A</span>
+        <span class="hero-letter">D</span>
+        <span class="hero-letter">T</span>
+      </div>
+
+      <div class="hero-top">
+        <div class="hero-tag">
+          <span class="hero-tag-dot"></span>
+          Multiplayer Wortspiel
+        </div>
+        <div class="hero-title"><span class="title-white">Buchstaben</span><span class="title-orange">Battle</span></div>
+        <div class="hero-sub">Stadt · Land · Fluss · und mehr</div>
+      </div>
+
+      <div class="hero-actions">
+        <button class="hero-btn hero-btn-primary" onclick="goCreate()">
+          <span class="hero-btn-icon">🎮</span>
+          <span class="hero-btn-label">Erstellen</span>
+          <span class="hero-btn-desc">Neue Lobby</span>
+        </button>
+        <button class="hero-btn hero-btn-secondary" onclick="showJoin()">
+          <span class="hero-btn-icon">🔗</span>
+          <span class="hero-btn-label">Joinen</span>
+          <span class="hero-btn-desc">Code eingeben</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- JOIN PANEL -->
+    <div id="join-panel" style="display:none;" class="card" style="animation: fadeInUp 0.3s ease both;">
+      <div class="label">Lobby-Code eingeben</div>
+      <div class="inline-row">
+        <input type="text" id="join-code-inp" placeholder="z.B. WXYZ" maxlength="4" style="text-transform:uppercase; font-family:'Syne',sans-serif; font-size:1.5rem; letter-spacing:0.2em; text-align:center;" />
+      </div>
+      <div class="inline-row" style="margin-top:8px;">
+        <input type="text" id="join-name-inp" placeholder="Dein Name..." maxlength="20" class="flex-1" />
+        <button class="btn btn-primary" onclick="joinLobby()">Joinen</button>
+      </div>
+      <div id="join-error" style="color:var(--red);font-size:13px;margin-top:6px;display:none;"></div>
+    </div>
+
+    <!-- HOW TO PLAY -->
+    <div class="how-strip">
+      <div class="how-title">So funktioniert's</div>
+      <div class="how-steps">
+        <div class="how-step">
+          <div class="how-step-num">1</div>
+          <div class="how-step-icon">🔤</div>
+          <div class="how-step-text">
+            <span class="how-step-label">Buchstabe wird gezogen</span>
+            <span class="how-step-desc">Jede Runde startet mit einem zufälligen Buchstaben</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">2</div>
+          <div class="how-step-icon">⚡</div>
+          <div class="how-step-text">
+            <span class="how-step-label">Alle Kategorien ausfüllen</span>
+            <span class="how-step-desc">So schnell wie möglich — der Timer läuft!</span>
+          </div>
+        </div>
+        <div class="how-step">
+          <div class="how-step-num">3</div>
+          <div class="how-step-icon">🏆</div>
+          <div class="how-step-text">
+            <span class="how-step-label">Punkte kassieren</span>
+            <span class="how-step-desc">Einzigartige Antwort zählt mehr</span>
+          </div>
+          <div class="how-step-pts">
+            <span class="pts-main">10 pts</span>
+            <span class="pts-sub">5 bei Doppelt</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- OFFLINE MODE – strong card -->
+    <div class="offline-block" onclick="goOffline()">
+      <div class="offline-block-icon">📄</div>
+      <div class="offline-block-body">
+        <span class="offline-block-tag">Kein Internet nötig</span>
+        <span class="offline-block-title">Offline-Modus</span>
+        <span class="offline-block-desc">Buchstabe & Kategorien für die Papier-Runde</span>
+      </div>
+      <div class="offline-block-arrow">→</div>
+    </div>
+
+  </div>
+
+  <!-- ── CREATE ── -->
+  <div class="screen" id="s-create">
+    <span class="badge">Spiel erstellen</span>
+    <div class="card">
+      <div class="label">Dein Name</div>
+      <input type="text" id="host-name" placeholder="Dein Name..." maxlength="20" />
+    </div>
+    <div class="card">
+      <div class="label">Kategorien</div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap; margin-bottom:10px;" id="cat-mode-btns">
+        <button class="btn" id="cm-random" onclick="setCatMode('random')">Zufällig</button>
+        <button class="btn" id="cm-library" onclick="setCatMode('library')">Bibliothek</button>
+        <button class="btn" id="cm-custom" onclick="setCatMode('custom')">Eigene</button>
+      </div>
+      <div id="cat-mode-content"></div>
+    </div>
+    <div class="card">
+      <div class="label">Spieloptionen</div>
+      <div class="row">
+        <span style="font-size:14px;">Runden</span>
+        <select id="opt-rounds"><option>3</option><option selected>5</option><option>7</option><option>10</option></select>
+      </div>
+      <div class="row">
+        <span style="font-size:14px;">Rundenende</span>
+        <select id="opt-timer-mode" onchange="document.getElementById('opt-dur-row').style.display=this.value==='timer'?'flex':'none'">
+          <option value="timer">Timer</option>
+          <option value="first">Erster fertig</option>
+        </select>
+      </div>
+      <div class="row" id="opt-dur-row">
+        <span style="font-size:14px;">Timer-Dauer</span>
+        <select id="opt-timer-dur"><option value="60" selected>60 Sek</option><option value="90">90 Sek</option><option value="120">120 Sek</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary flex-1" onclick="createLobby()">Lobby erstellen</button>
+      <button class="btn" onclick="showScreen('s-start')">Zurück</button>
+    </div>
+  </div>
+
+  <!-- ── LOBBY ── -->
+  <div class="screen" id="s-lobby">
+    <span class="badge" id="lobby-badge">Warte auf Spieler</span>
+    <div class="card" style="text-align:center;">
+      <div class="label">Lobby-Code — teile ihn mit deinen Freunden</div>
+      <div class="lobby-code" id="lobby-code-display">----</div>
+      <button class="btn" style="margin:0 auto;" onclick="copyCode()">Code kopieren</button>
+    </div>
+    <div class="card">
+      <div class="label">Spieler (<span id="player-count">0</span>/6)</div>
+      <div id="lobby-player-list"></div>
+    </div>
+    <div id="host-lobby-btns" style="display:none;">
+      <div class="btn-row">
+        <button class="btn btn-primary flex-1" onclick="startGame()">Spiel starten</button>
+        <button class="btn" onclick="leaveLobby()">Verlassen</button>
+      </div>
+    </div>
+    <div id="guest-lobby-btns" style="display:none;">
+      <div class="btn-row">
+        <button class="btn" onclick="leaveLobby()">Lobby verlassen</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── ROUND ── -->
+  <div class="screen" id="s-round">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+      <span class="badge" id="round-badge" style="margin:0;">Runde 1/5</span>
+      <div class="timer-num" id="timer-num"></div>
+    </div>
+    <div class="big-letter" id="round-letter">A</div>
+    <div class="progress"><div class="progress-fill" id="timer-bar" style="width:100%"></div></div>
+    <div class="player-tabs" id="player-tabs"></div>
+    <div class="card" id="answer-panel"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary" id="done-btn" onclick="markDone()">Fertig</button>
+      <button class="btn" onclick="confirmEndRound()">Runde beenden</button>
+    </div>
+  </div>
+
+  <!-- ── WAITING ── -->
+  <div class="screen" id="s-waiting">
+    <div class="card" style="text-align:center; padding:2rem;">
+      <div class="spinner" style="margin:0 auto 1rem;"></div>
+      <div style="font-size:15px; font-weight:500;" id="waiting-msg">Warte auf andere Spieler...</div>
+      <div style="font-size:13px; color:var(--text-muted); margin-top:6px;" id="waiting-sub"></div>
+    </div>
+  </div>
+
+  <!-- ── EVAL ── -->
+  <div class="screen" id="s-eval">
+    <span class="badge">KI-Auswertung</span>
+    <div class="card" style="margin-bottom:0.5rem;">
+      <div class="label">Buchstabe dieser Runde</div>
+      <div style="font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:800; color:var(--orange);" id="eval-letter"></div>
+    </div>
+    <div id="eval-content"></div>
+    <div id="eval-btns" class="btn-row" style="display:none;">
+      <button class="btn btn-primary flex-1" onclick="confirmEval()">Punkte vergeben</button>
+    </div>
+  </div>
+
+  <!-- ── SCORES ── -->
+  <div class="screen" id="s-scores">
+    <span class="badge" id="scores-badge">Nach Runde 1/5</span>
+    <div class="card">
+      <div class="label">Rangliste</div>
+      <div id="scoreboard"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary flex-1" id="next-round-btn" onclick="hostNextRound()">Nächste Runde</button>
+      <button class="btn flex-1" id="end-game-btn" style="display:none;" onclick="hostEndGame()">Spiel beenden</button>
+    </div>
+    <div id="waiting-next" style="display:none;" class="card" style="text-align:center;">
+      <div class="loading-row" style="justify-content:center;"><div class="spinner"></div><span>Warte auf Host...</span></div>
+    </div>
+  </div>
+
+  <!-- ── END ── -->
+  <div class="screen" id="s-end">
+    <div class="card" style="text-align:center; padding:2rem 1.25rem;">
+      <div class="winner-big" id="winner-name"></div>
+      <div style="color:var(--text-muted); font-size:13px;" id="winner-pts"></div>
+    </div>
+    <div class="card">
+      <div class="label">Endrangliste</div>
+      <div id="final-board"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-block" onclick="leaveToStart()">Neues Spiel</button>
+    </div>
+  </div>
+
+  <!-- ── OFFLINE ── -->
+  <div class="screen" id="s-offline">
+    <span class="badge">Offline-Modus</span>
+
+    <!-- Rules info card -->
+    <div class="card" style="background:var(--orange-light);border-color:var(--orange-border);margin-bottom:0.75rem;">
+      <div class="label" style="color:var(--orange-dark);">📋 Punkteregeln</div>
+      <div style="font-size:13px;color:var(--text);line-height:1.6;">
+        Wer als Einziger eine Antwort hat, kassiert <strong>10 Punkte</strong>. Haben mehrere Spieler die gleiche Antwort, gibt es nur <strong>5 Punkte</strong> — doppelt lohnt sich also nicht!
+      </div>
+    </div>
+
+    <!-- Players -->
+    <div class="card">
+      <div class="label">Spieler</div>
+      <div id="ol-player-list-setup" style="margin-bottom:8px;"></div>
+      <div class="inline-row">
+        <input type="text" id="ol-player-inp" placeholder="Spielername..." maxlength="20" class="flex-1" onkeydown="if(event.key==='Enter') addOlPlayer()" />
+        <button class="btn" onclick="addOlPlayer()">+</button>
+      </div>
+      <div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Mindestens 2 Spieler</div>
+    </div>
+
+    <!-- Categories -->
+    <div class="card">
+      <div class="label">Kategorien</div>
+      <div id="ol-cats-display" class="cat-wrap" style="margin-bottom:10px;"><span class="empty">Noch keine gewählt</span></div>
+      <div style="display:flex; gap:6px; flex-wrap:wrap;">
+        <button class="btn" onclick="olGenRandom()">Zufällig</button>
+        <button class="btn" onclick="toggleOlPicker()">Bibliothek</button>
+        <button class="btn" onclick="toggleOlCustom()">Eigene</button>
+      </div>
+    </div>
+    <div id="ol-picker" class="card" style="display:none;">
+      <div class="label">Bibliothek</div>
+      <div class="cat-wrap" id="ol-lib-grid"></div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="confirmOlCats()">Übernehmen</button></div>
+    </div>
+    <div id="ol-custom-panel" class="card" style="display:none;">
+      <div class="label">Eigene Kategorien</div>
+      <div class="cat-wrap" id="ol-custom-list" style="margin-bottom:8px;"></div>
+      <div class="inline-row">
+        <input type="text" id="ol-custom-inp" placeholder="Kategorie..." maxlength="30" class="flex-1" onkeydown="if(event.key==='Enter') addOlCustomCat()" />
+        <button class="btn" onclick="addOlCustomCat()">+</button>
+      </div>
+      <div class="btn-row"><button class="btn btn-primary" onclick="confirmOlCustomCats()">Übernehmen</button></div>
+    </div>
+
+    <div class="card">
+      <div class="label">Optionen</div>
+      <div class="row">
+        <span style="font-size:14px;">Runden</span>
+        <select id="ol-rounds"><option>3</option><option selected>5</option><option>7</option><option>10</option></select>
+      </div>
+      <div class="row">
+        <span style="font-size:14px;">Timer</span>
+        <select id="ol-timer"><option value="0">Kein Timer</option><option value="60" selected>60 Sek</option><option value="90">90 Sek</option><option value="120">120 Sek</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary flex-1" onclick="startOffline()">Starten</button>
+      <button class="btn" onclick="showScreen('s-start')">Zurück</button>
+    </div>
+  </div>
+
+  <!-- ── OFFLINE ROUND ── -->
+  <div class="screen" id="s-ol-round">
+    <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+      <span class="badge" id="ol-round-badge" style="margin:0;">Runde 1/5</span>
+      <div class="timer-num" id="ol-timer-num"></div>
+    </div>
+    <span class="offline-letter-big" id="ol-round-letter">A</span>
+    <div class="progress"><div class="progress-fill" id="ol-bar" style="width:100%"></div></div>
+    <div class="card">
+      <div class="label">Kategorien</div>
+      <div id="ol-round-cats" class="cat-wrap"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary flex-1" onclick="endOlRound()">Runde beenden</button>
+    </div>
+  </div>
+
+  <!-- ── OFFLINE SCORING ── -->
+  <div class="screen" id="s-ol-score">
+    <span class="badge" id="ol-score-badge">Punkte vergeben – Runde 1/5</span>
+    <div class="card" style="margin-bottom:8px;">
+      <div style="display:flex;align-items:center;gap:12px;">
+        <div>
+          <div class="label" style="margin-bottom:2px;">Buchstabe dieser Runde</div>
+          <div style="font-family:'Syne',sans-serif; font-size:2.5rem; font-weight:800; color:var(--orange);" id="ol-score-letter"></div>
+        </div>
+        <div style="flex:1;font-size:12px;color:var(--text-muted);line-height:1.5;background:var(--surface2);border-radius:8px;padding:8px 10px;">
+          Zählt selbst zusammen:<br>
+          <strong style="color:var(--text);">10 Pkt</strong> einzigartige Antwort<br>
+          <strong style="color:var(--text);">5 Pkt</strong> doppelte Antwort<br>
+          <strong style="color:var(--text);">0 Pkt</strong> falsch / leer
+        </div>
+      </div>
+    </div>
+    <div id="ol-score-content"></div>
+    <div class="btn-row">
+      <button class="btn btn-primary flex-1" onclick="confirmOlScores()">Speichern & weiter →</button>
+    </div>
+  </div>
+
+  <!-- ── OFFLINE END ── -->
+  <div class="screen" id="s-ol-end">
+    <div class="card" style="text-align:center; padding:2rem 1.25rem;">
+      <div style="font-size:2.5rem; margin-bottom:0.5rem;">🏆</div>
+      <div class="winner-big" id="ol-winner-name"></div>
+      <div style="color:var(--text-muted); font-size:13px;" id="ol-winner-pts"></div>
+    </div>
+    <div class="card">
+      <div class="label">Endrangliste</div>
+      <div id="ol-final-board"></div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-primary btn-block" onclick="showScreen('s-start')">Neues Spiel</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Firebase -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getDatabase, ref, set, get, update, onValue, remove } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+
+// ── GEMINI API KEY ──
+const GEMINI_API_KEY = 'AIzaSyBC9-XRpgEgTCB1XIMbDtEGGy7mjMq4QeY';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyCigvsTn_qZt_hv5-BPTvb25feNuIVKFpw",
+  authDomain: "buchstaben-battle.firebaseapp.com",
+  databaseURL: "https://buchstaben-battle-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "buchstaben-battle",
+  storageBucket: "buchstaben-battle.firebasestorage.app",
+  messagingSenderId: "105772929975",
+  appId: "1:105772929975:web:182405ef8ba037c8140e32"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+
+// ── CONSTANTS ──
+const LETTERS = 'ABCDEFGHIJKLMNOPRSTUVWZ'.split('');
+const CAT_LIB = [
+  'Stadt','Land','Fluss','Tier','Pflanze',
+  'Promi','Film','Seriename','Schauspieler','Musiker','Band','Lied','Computerspiel',
+  'Essen','Gemüse','Obst','Getränk','Süssigkeit','Fastfood',
+  'Automarke','Sportler','Beruf','Farbe','Instrument','Kleidungsstück',
+  'Körperteil','Länderhauptstadt','Sportart','Sprache','Wissenschaftler','Erfindung',
+  'Ausrede wenn man zu spät ist','Dinge die man bei IKEA kauft','Sachen die im Kühlschrank vergessen werden',
+  'Dinge die Katzen machen','Ausreden für nicht Hausaufgaben','Hashtag','Emojibeschreibung',
+  'Dinge die man im Stress vergisst','Sachen die man auf Netflix nicht fertigschaut',
+  'Was Oma immer sagt','Gründe warum man nicht schläft',
+  'Dinge in einer Handtasche','Sachen die Touristen komisch finden',
+  'App auf dem Handy','YouTuber','TikTok-Trend',
+  'Superheld','Märchenfigur','Dinosaurier','Planeten','Schweizer Begriff'
+];
+
+// ── UTILS ──
+function randLetter() { return LETTERS[Math.floor(Math.random()*LETTERS.length)]; }
+function randCats(n) { return [...CAT_LIB].sort(()=>Math.random()-0.5).slice(0,n); }
+function uid() { return Math.random().toString(36).substr(2,9); }
+function genCode() { return Math.random().toString(36).substr(2,4).toUpperCase(); }
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+}
+window.showScreen = showScreen;
+
+// ── ONLINE STATE ──
+// Single source of truth: Firebase lobby
+// Local state only tracks who I am and my current answers
+let me = { id: null, name: '', isHost: false };
+let lobbyCode = '';
+let lobbyRef = null;
+let lobbyListener = null;   // single listener on the whole lobby
+let myAnswers = {};          // local draft answers
+let localLocked = false;     // inputs locked after submit
+let verdicts = {};           // host verdict overrides for eval
+let timerInterval = null;
+let currentRoundStarted = null; // which round number we've already started locally
+let evalShown = false;          // prevent eval screen re-triggering
+let scoresShown = null;         // which round's scores we've shown
+
+function startLobbyListener() {
+  if(lobbyListener) lobbyListener();
+  lobbyListener = onValue(lobbyRef, snap => {
+    if(!snap.exists()) { leaveToStart(); return; }
+    const lobby = snap.val();
+    handleLobbyUpdate(lobby);
+  });
+}
+
+function stopLobbyListener() {
+  if(lobbyListener) { lobbyListener(); lobbyListener = null; }
+  clearInterval(timerInterval);
+}
+
+// ── CENTRAL STATE MACHINE ──
+function handleLobbyUpdate(lobby) {
+  const phase = lobby.phase;
+  const roundNum = lobby.config?.round;
+
+  if(phase === 'lobby') {
+    renderLobbyPlayers(lobby.players||{});
+    return;
+  }
+
+  if(phase === 'playing') {
+    // Only start round screen once per round number
+    if(currentRoundStarted === roundNum) {
+      // Round already started — just update waiting count if submitted
+      if(localLocked) updateWaitingCount(lobby);
+      return;
+    }
+    // New round — start it
+    currentRoundStarted = roundNum;
+    evalShown = false;
+    scoresShown = null;
+    localLocked = false;
+    startRoundScreen(lobby);
+    return;
+  }
+
+  if(phase === 'eval') {
+    if(evalShown) return; // don't re-render
+    evalShown = true;
+    if(lobby.evalData) showEvalScreen(lobby);
+    return;
+  }
+
+  if(phase === 'scores') {
+    if(scoresShown === roundNum) return;
+    scoresShown = roundNum;
+    showScoresScreen(lobby);
+    return;
+  }
+
+  if(phase === 'ended') {
+    showEndScreen(lobby);
+    return;
+  }
+}
+
+// ── ROUND SCREEN ──
+function startRoundScreen(lobby) {
+  clearInterval(timerInterval);
+  localLocked = false;
+  myAnswers = {};
+
+  const config = lobby.config;
+  const cats = config.currentCats || [];
+  const letter = config.letter || '?';
+
+  document.getElementById('round-badge').textContent = `Runde ${config.round}/${config.totalRounds}`;
+  document.getElementById('round-letter').textContent = letter;
+  document.getElementById('eval-letter').textContent = letter;
+
+  // Build answer inputs
+  cats.forEach(c => myAnswers[c] = '');
+  renderAnswerInputs(cats, letter, false);
+  document.getElementById('done-btn').disabled = false;
+  document.getElementById('done-btn').textContent = 'Fertig ✓';
+
+  showScreen('s-round');
+
+  // Timer
+  if(config.timerMode === 'timer') {
+    let left = config.timerDur || 60;
+    const total = left;
+    updateTimerDisplay(left, total);
+    timerInterval = setInterval(() => {
+      left--;
+      updateTimerDisplay(left, total);
+      if(left > 0 && left <= 5) playUrgentBeep();
+      if(left <= 0) {
+        clearInterval(timerInterval);
+        playTimerSound();
+        lockAndSubmit();
+      }
+    }, 1000);
+  } else {
+    document.getElementById('timer-num').textContent = '';
+    document.getElementById('timer-bar').style.width = '100%';
+  }
+}
+
+function renderAnswerInputs(cats, letter, locked) {
+  document.getElementById('answer-panel').innerHTML = cats.map(cat => `
+    <div class="answer-grid">
+      <div class="answer-label">${cat}</div>
+      <input type="text" id="inp-${cat.replace(/\W/g,'_')}"
+        value="${myAnswers[cat]||''}"
+        placeholder="${letter}..."
+        ${locked ? 'disabled' : ''}
+        oninput="window._onInput('${cat.replace(/'/g,"\\'")}', this.value)"
+      />
+    </div>`).join('');
+}
+
+window._onInput = function(cat, val) {
+  if(!localLocked) myAnswers[cat] = val;
+};
+
+function updateTimerDisplay(left, total) {
+  const el = document.getElementById('timer-num');
+  const bar = document.getElementById('timer-bar');
+  if(el) { el.textContent = left > 0 ? left : 'Zeit!'; el.className = 'timer-num' + (left <= 10 ? ' urgent' : ''); }
+  if(bar) bar.style.width = (Math.max(0,left)/total*100) + '%';
+}
+
+// ── SUBMIT ──
+window.markDone = async function() {
+  clearInterval(timerInterval);
+  await lockAndSubmit();
+};
+
+window.confirmEndRound = function() {
+  if(confirm('Runde wirklich beenden? (Für alle Spieler)')) {
+    if(me.isHost) forceEndRound();
+  }
+};
+
+async function lockAndSubmit() {
+  if(localLocked) return;
+  localLocked = true;
+
+  // Use cached cats/letter from DOM (no Firebase read needed)
+  const letter = document.getElementById('round-letter')?.textContent || '';
+  const cats = Array.from(document.querySelectorAll('.answer-label')).map(el => el.textContent);
+
+  // Lock inputs visually immediately
+  renderAnswerInputs(cats, letter, true);
+  document.getElementById('done-btn').disabled = true;
+  document.getElementById('done-btn').textContent = 'Gesendet ✓';
+
+  // Save only non-empty answers
+  const toSave = {};
+  Object.entries(myAnswers).forEach(([k,v]) => { const t = (v||'').trim(); if(t) toSave[k] = t; });
+
+  await update(ref(db, `lobbies/${lobbyCode}/answers/${me.id}`), toSave);
+  await update(ref(db, `lobbies/${lobbyCode}/done`), { [me.id]: true });
+
+  showWaiting('Antworten gesendet ✓', 'Warte auf andere Spieler...');
+
+  if(me.isHost) checkIfAllDone();
+}
+
+async function checkIfAllDone() {
+  const snap = await get(lobbyRef);
+  if(!snap.exists()) return;
+  const lobby = snap.val();
+  const playerIds = Object.keys(lobby.players || {});
+  const doneIds = Object.keys(lobby.done || {});
+  const allDone = playerIds.every(id => doneIds.includes(id));
+  if(allDone) startEval(lobby);
+}
+
+async function forceEndRound() {
+  // Host can force-end: save empty answers for anyone not done
+  const snap = await get(lobbyRef);
+  if(!snap.exists()) return;
+  const lobby = snap.val();
+  const playerIds = Object.keys(lobby.players || {});
+  const doneIds = Object.keys(lobby.done || {});
+  const updates = {};
+  playerIds.forEach(id => { if(!doneIds.includes(id)) updates[id] = true; });
+  await update(ref(db, `lobbies/${lobbyCode}/done`), updates);
+  await startEval(lobby);
+}
+
+function showWaiting(title, sub) {
+  document.getElementById('waiting-msg').textContent = title;
+  document.getElementById('waiting-sub').textContent = sub;
+  showScreen('s-waiting');
+}
+
+function updateWaitingCount(lobby) {
+  const total = Object.keys(lobby.players||{}).length;
+  const done = Object.keys(lobby.done||{}).length;
+  document.getElementById('waiting-sub').textContent = `${done}/${total} fertig`;
+}
+
+// ── EVAL: GEMINI ──
+async function startEval(lobby) {
+  // Pause listener during async eval to prevent channel conflicts
+  if(lobbyListener) { lobbyListener(); lobbyListener = null; }
+
+  showWaiting('KI bewertet...', 'Einen Moment bitte');
+
+  const config = lobby.config || {};
+  const players = lobby.players || {};
+  const allAnswers = lobby.answers || {};
+  const letter = config.letter || '';
+  const cats = config.currentCats || [];
+
+  const items = [];
+  Object.entries(allAnswers).forEach(([pid, catAnswers]) => {
+    Object.entries(catAnswers || {}).forEach(([cat, ans]) => {
+      const a = (ans||'').trim();
+      if(a) items.push({ playerId: pid, playerName: players[pid]?.name||pid, category: cat, answer: a });
+    });
+  });
+
+  let evalData = { letter, cats, players: {}, answers: allAnswers };
+
+  Object.keys(players).forEach(pid => {
+    evalData.players[pid] = { name: players[pid].name, results: {} };
+    cats.forEach(cat => {
+      const ans = (allAnswers[pid]?.[cat]||'').trim();
+      evalData.players[pid].results[cat] = { answer: ans, correct: false, reason: '' };
+    });
+  });
+
+  if(items.length > 0) {
+    try {
+      const prompt = `Du bist Schiedsrichter für Stadt Land Fluss. Buchstabe: "${letter}".
+Bewerte jede Antwort: korrekt wenn sie zur Kategorie passt und mit "${letter}" beginnt. Tippfehler tolerieren.
+Antworte NUR mit validem JSON-Array ohne Markdown, keine Erklärung davor oder danach:
+[{"playerId":"...","category":"...","correct":true,"reason":"kurz auf Deutsch"}]
+Zu bewerten: ${JSON.stringify(items)}`;
+
+      const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-lite:generateContent?key=${GEMINI_API_KEY}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+      });
+      const data = await res.json();
+      if(data.error) throw new Error(data.error.message);
+      const txt = (data.candidates?.[0]?.content?.parts?.[0]?.text || '').replace(/```json|```/g,'').trim();
+      const results = JSON.parse(txt);
+      if(!Array.isArray(results)) throw new Error('No array');
+
+      results.forEach(r => {
+        if(evalData.players[r.playerId]?.results[r.category] !== undefined) {
+          evalData.players[r.playerId].results[r.category].correct = !!r.correct;
+          evalData.players[r.playerId].results[r.category].reason = r.reason || '';
+        }
+      });
+    } catch(e) {
+      console.warn('Gemini fehlgeschlagen, Fallback:', e.message);
+      Object.keys(evalData.players).forEach(pid => {
+        cats.forEach(cat => {
+          const ans = evalData.players[pid].results[cat].answer;
+          if(ans) {
+            evalData.players[pid].results[cat].correct = ans.toLowerCase().startsWith(letter.toLowerCase());
+            evalData.players[pid].results[cat].reason = 'Auto-Bewertung (Buchstaben-Check)';
+          }
+        });
+      });
+    }
+  }
+
+  // Write evalData first, then update phase
+  await set(ref(db, `lobbies/${lobbyCode}/evalData`), evalData);
+  await update(lobbyRef, { phase: 'eval' });
+
+  // Host shows eval screen directly from local data (no listener needed)
+  evalShown = true;
+  showEvalScreen({ evalData });
+
+  // Restart listener after showing eval
+  startLobbyListener();
+}
+
+// ── EVAL SCREEN ──
+function showEvalScreen(lobby) {
+  const evalData = lobby.evalData;
+  const cats = evalData.cats || [];
+  const players = evalData.players || {};
+  const allAnswers = evalData.answers || {};
+
+  verdicts = {};
+
+  let html = '';
+  cats.forEach(cat => {
+    const entries = Object.entries(players).filter(([pid, p]) => p.results[cat]?.answer);
+    if(entries.length === 0) return;
+
+    html += `<div class="card" style="margin-bottom:8px;"><div class="label">${cat}</div>`;
+    entries.forEach(([pid, p]) => {
+      const r = p.results[cat];
+      const ans = r.answer;
+      const isOk = r.correct;
+      const reason = r.reason;
+
+      // Check if same answer as another player
+      const sameAsOther = entries.some(([oid]) => oid !== pid && players[oid].results[cat]?.answer?.toLowerCase() === ans.toLowerCase());
+
+      if(!verdicts[cat]) verdicts[cat] = {};
+      verdicts[cat][pid] = isOk;
+
+      const btnId = `vrd_${cat.replace(/\W/g,'_')}_${pid}`;
+      html += `<div class="row" style="gap:8px;align-items:flex-start;padding:10px 0;">
+        <div style="flex:1;min-width:0;">
+          <div style="font-size:13px;font-weight:600;">${p.name}${sameAsOther?'<span class="double-badge" style="margin-left:6px;">Doppelt</span>':''}</div>
+          <div style="font-size:15px;margin:2px 0;">${ans || '<em style="color:var(--text-muted)">Keine Antwort</em>'}</div>
+          ${reason ? `<div class="reason-text">${reason}</div>` : ''}
+        </div>
+        ${me.isHost
+          ? `<button class="toggle-verdict ${isOk?'verdict-ok':'verdict-fail'}" id="${btnId}" data-ok="${isOk}" onclick="window._flipVerdict('${cat.replace(/'/g,"\\'")}','${pid}')">${isOk?'✓ Richtig':'✗ Falsch'}</button>`
+          : `<span class="${isOk?'verdict-ok':'verdict-fail'}" style="font-size:12px;padding:4px 10px;border-radius:99px;white-space:nowrap;">${isOk?'✓ Richtig':'✗ Falsch'}</span>`
+        }
+      </div>`;
+    });
+    html += '</div>';
+  });
+
+  if(!html) html = '<div class="card"><div class="empty">Niemand hat Antworten eingegeben.</div></div>';
+
+  document.getElementById('eval-content').innerHTML = html;
+  document.getElementById('eval-btns').style.display = me.isHost ? 'flex' : 'none';
+
+  if(!me.isHost) {
+    document.getElementById('eval-content').insertAdjacentHTML('afterbegin',
+      '<div class="card" style="text-align:center;margin-bottom:8px;padding:1rem;"><div class="loading-row" style="justify-content:center;"><div class="spinner"></div><span style="margin-left:8px;">Host vergibt Punkte...</span></div></div>'
+    );
+  }
+
+  showScreen('s-eval');
+}
+
+window._flipVerdict = function(cat, pid) {
+  const btnId = `vrd_${cat.replace(/\W/g,'_')}_${pid}`;
+  const btn = document.getElementById(btnId);
+  if(!btn) return;
+  const wasOk = btn.dataset.ok === 'true';
+  const nowOk = !wasOk;
+  btn.dataset.ok = String(nowOk);
+  btn.textContent = nowOk ? '✓ Richtig' : '✗ Falsch';
+  btn.className = 'toggle-verdict ' + (nowOk ? 'verdict-ok' : 'verdict-fail');
+  if(!verdicts[cat]) verdicts[cat] = {};
+  verdicts[cat][pid] = nowOk;
+};
+
+// ── CONFIRM EVAL → CALCULATE SCORES ──
+window.confirmEval = async function() {
+  const snap = await get(lobbyRef);
+  if(!snap.exists()) return;
+  const lobby = snap.val();
+  const evalData = lobby.evalData;
+  const players = evalData.players || {};
+  const cats = evalData.cats || [];
+  const config = lobby.config || {};
+
+  // Start from existing cumulative scores
+  const newScores = {};
+  Object.keys(players).forEach(pid => { newScores[pid] = Number(config.scores?.[pid] || 0); });
+
+  cats.forEach(cat => {
+    // Who answered correctly in this category?
+    const correctPids = Object.keys(players).filter(pid => verdicts[cat]?.[pid] === true);
+
+    correctPids.forEach(pid => {
+      const ans = (players[pid].results[cat]?.answer || '').trim().toLowerCase();
+      if(!ans) return;
+      // Unique answer = 10pts, shared = 5pts
+      const sameCount = correctPids.filter(p => (players[p].results[cat]?.answer||'').trim().toLowerCase() === ans).length;
+      newScores[pid] = (newScores[pid] || 0) + (sameCount === 1 ? 10 : 5);
+    });
+  });
+
+  await update(ref(db, `lobbies/${lobbyCode}/config/scores`), newScores);
+  await update(lobbyRef, { phase: 'scores' });
+};
+
+// ── SCORES SCREEN ──
+function showScoresScreen(lobby) {
+  const players = lobby.players || {};
+  const scores = lobby.config?.scores || {};
+  const config = lobby.config || {};
+  const sorted = Object.entries(players).sort((a,b) => (scores[b[0]]||0) - (scores[a[0]]||0));
+
+  document.getElementById('scores-badge').textContent = `Nach Runde ${config.round||'?'}/${config.totalRounds||'?'}`;
+  document.getElementById('scoreboard').innerHTML = sorted.map(([pid,p],i) => `
+    <div class="scoreboard-row">
+      <span class="rank">${i+1}</span>
+      <span style="flex:1;">${p.name}</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">${scores[pid]||0} Pts</span>
+    </div>`).join('');
+
+  const isLast = (config.round||0) >= (config.totalRounds||5);
+  document.getElementById('next-round-btn').style.display = me.isHost && !isLast ? 'flex' : 'none';
+  document.getElementById('end-game-btn').style.display = me.isHost && isLast ? 'flex' : 'none';
+  document.getElementById('waiting-next').style.display = !me.isHost ? 'block' : 'none';
+
+  showScreen('s-scores');
+}
+
+window.hostNextRound = async function() {
+  const snap = await get(lobbyRef);
+  if(!snap.exists()) return;
+  const config = snap.val().config || {};
+  const nextRound = (config.round||0) + 1;
+  const letter = randLetter();
+  const cats = config.catMode === 'random' ? randCats(6) : (config.categories || randCats(6));
+
+  // Write everything atomically — phase LAST so clients only react once it's all ready
+  await set(ref(db, `lobbies/${lobbyCode}/answers`), {});
+  await set(ref(db, `lobbies/${lobbyCode}/done`), {});
+  await set(ref(db, `lobbies/${lobbyCode}/evalData`), null);
+  await update(ref(db, `lobbies/${lobbyCode}/config`), {
+    round: nextRound,
+    letter,
+    currentCats: cats
+  });
+  await update(lobbyRef, { phase: 'playing' });
+};
+
+window.hostEndGame = async function() {
+  await update(lobbyRef, { phase: 'ended' });
+};
+
+// ── END SCREEN ──
+function showEndScreen(lobby) {
+  const players = lobby.players || {};
+  const scores = lobby.config?.scores || {};
+  const sorted = Object.entries(players).sort((a,b) => (scores[b[0]]||0) - (scores[a[0]]||0));
+  const [winnerId, winnerData] = sorted[0] || ['?', {name:'?'}];
+  document.getElementById('winner-name').textContent = (winnerData.name||'?') + ' gewinnt! 🎉';
+  document.getElementById('winner-pts').textContent = (scores[winnerId]||0) + ' Punkte';
+  document.getElementById('final-board').innerHTML = sorted.map(([pid,p],i) => `
+    <div class="scoreboard-row">
+      <span class="rank">${i+1}</span>
+      <span style="flex:1;">${p.name}</span>
+      <span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">${scores[pid]||0} Pts</span>
+    </div>`).join('');
+  showScreen('s-end');
+}
+
+// ── LOBBY SETUP ──
+window.showJoin = function() {
+  const p = document.getElementById('join-panel');
+  p.style.display = p.style.display === 'none' ? 'block' : 'none';
+};
+
+window.goCreate = function() { setCatMode('random'); showScreen('s-create'); };
+window.goOffline = function() {
+  olSetupPlayers = []; olCustomCats = [];
+  olState.cats = []; olState.selCats = [];
+  renderOlSetupPlayers(); renderOlCats();
+  showScreen('s-offline');
+};
+
+window.createLobby = async function() {
+  const name = document.getElementById('host-name').value.trim();
+  if(!name) { alert('Bitte gib deinen Namen ein.'); return; }
+
+  me = { id: uid(), name, isHost: true };
+  lobbyCode = genCode();
+
+  const cats = getFinalCats();
+  const lobbyData = {
+    host: me.id,
+    phase: 'lobby',
+    config: {
+      categories: cats,
+      catMode,
+      totalRounds: parseInt(document.getElementById('opt-rounds').value),
+      timerMode: document.getElementById('opt-timer-mode').value,
+      timerDur: parseInt(document.getElementById('opt-timer-dur').value),
+      round: 0,
+      letter: '',
+      currentCats: cats,
+      scores: { [me.id]: 0 }
+    },
+    players: { [me.id]: { name: me.name, online: true } },
+    answers: {},
+    done: {}
+  };
+
+  lobbyRef = ref(db, 'lobbies/' + lobbyCode);
+  await set(lobbyRef, lobbyData);
+  enterLobby();
+};
+
+window.joinLobby = async function() {
+  const code = document.getElementById('join-code-inp').value.trim().toUpperCase();
+  const name = document.getElementById('join-name-inp').value.trim();
+  const errEl = document.getElementById('join-error');
+  errEl.style.display = 'none';
+  if(!code || code.length !== 4) { errEl.textContent='Ungültiger Code.'; errEl.style.display='block'; return; }
+  if(!name) { errEl.textContent='Bitte gib deinen Namen ein.'; errEl.style.display='block'; return; }
+
+  const snap = await get(ref(db, 'lobbies/'+code));
+  if(!snap.exists()) { errEl.textContent='Lobby nicht gefunden.'; errEl.style.display='block'; return; }
+  const data = snap.val();
+  if(Object.keys(data.players||{}).length >= 6) { errEl.textContent='Lobby voll.'; errEl.style.display='block'; return; }
+  if(data.phase !== 'lobby') { errEl.textContent='Spiel läuft bereits.'; errEl.style.display='block'; return; }
+
+  me = { id: uid(), name, isHost: false };
+  lobbyCode = code;
+  lobbyRef = ref(db, 'lobbies/'+code);
+  await update(ref(db, `lobbies/${code}/players/${me.id}`), { name, online: true });
+  await update(ref(db, `lobbies/${code}/config/scores`), { [me.id]: 0 });
+  enterLobby();
+};
+
+function enterLobby() {
+  document.getElementById('lobby-code-display').textContent = lobbyCode;
+  document.getElementById('host-lobby-btns').style.display = me.isHost ? 'block' : 'none';
+  document.getElementById('guest-lobby-btns').style.display = me.isHost ? 'none' : 'block';
+  showScreen('s-lobby');
+  startLobbyListener();
+}
+
+function renderLobbyPlayers(players) {
+  const entries = Object.entries(players);
+  document.getElementById('player-count').textContent = entries.length;
+  document.getElementById('lobby-player-list').innerHTML = entries.map(([id,p]) => `
+    <div class="player-pill">
+      <span>${p.name}${id === me.id ? ' (Du)' : ''}</span>
+      <div class="status-dot online"></div>
+    </div>`).join('') || '<div class="empty">Noch niemand</div>';
+}
+
+window.copyCode = function() {
+  navigator.clipboard.writeText(lobbyCode).then(()=>alert('Code kopiert: '+lobbyCode));
+};
+
+window.leaveLobby = async function() {
+  stopLobbyListener();
+  if(me.isHost) { await remove(lobbyRef); }
+  else { await remove(ref(db, `lobbies/${lobbyCode}/players/${me.id}`)); }
+  leaveToStart();
+};
+
+window.leaveToStart = function() {
+  stopLobbyListener();
+  showScreen('s-start');
+};
+
+window.startGame = async function() {
+  const snap = await get(lobbyRef);
+  if(!snap.exists()) return;
+  const lobby = snap.val();
+  if(Object.keys(lobby.players||{}).length < 2) { alert('Mindestens 2 Spieler benötigt.'); return; }
+  const config = lobby.config;
+  const letter = randLetter();
+  const cats = config.catMode === 'random' ? randCats(6) : (config.categories || randCats(6));
+
+  await set(ref(db, `lobbies/${lobbyCode}/answers`), {});
+  await set(ref(db, `lobbies/${lobbyCode}/done`), {});
+  await set(ref(db, `lobbies/${lobbyCode}/evalData`), null);
+  await update(ref(db, `lobbies/${lobbyCode}/config`), { round: 1, letter, currentCats: cats });
+  await update(lobbyRef, { phase: 'playing' });
+};
+
+// ── CAT MODE (create screen) ──
+let catMode = 'random';
+let selLibCats = [];
+let customCats = [];
+
+window.setCatMode = function(mode) {
+  catMode = mode;
+  ['random','library','custom'].forEach(m => {
+    const btn = document.getElementById('cm-'+m);
+    if(!btn) return;
+    btn.style.background = m===mode ? 'var(--orange-light)' : '';
+    btn.style.borderColor = m===mode ? 'var(--orange)' : '';
+    btn.style.color = m===mode ? 'var(--orange-dark)' : '';
+  });
+  const c = document.getElementById('cat-mode-content');
+  if(mode==='random') {
+    c.innerHTML = '<div style="font-size:13px;color:var(--text-muted);">6 zufällige Kategorien pro Runde aus der Bibliothek.</div>';
+  } else if(mode==='library') {
+    selLibCats = [];
+    c.innerHTML = '<div class="cat-wrap" id="lib-grid"></div><div style="font-size:12px;color:var(--text-muted);margin-top:6px;">Wähle 4–8 Kategorien</div>';
+    document.getElementById('lib-grid').innerHTML = CAT_LIB.map((cat,i)=>`<div class="cat-chip" id="lc-${i}" onclick="toggleLibCat(${i},'${cat.replace(/'/g,"\\'")}')">${cat}</div>`).join('');
+  } else {
+    customCats = [];
+    c.innerHTML = `<div style="font-size:13px;color:var(--text-muted);margin-bottom:8px;">Eigene Kategorien eingeben.</div>
+      <div id="custom-list" style="margin-bottom:8px;display:flex;flex-wrap:wrap;gap:6px;"></div>
+      <div class="inline-row">
+        <input type="text" id="custom-inp" placeholder="Kategorie..." maxlength="20" class="flex-1" onkeydown="if(event.key==='Enter') addCustomCat()" />
+        <button class="btn" onclick="addCustomCat()">+</button>
+      </div>`;
+  }
+};
+
+window.toggleLibCat = function(i, cat) {
+  const chip = document.getElementById('lc-'+i);
+  if(selLibCats.includes(cat)) { selLibCats=selLibCats.filter(c=>c!==cat); chip.classList.remove('sel'); }
+  else { selLibCats.push(cat); chip.classList.add('sel'); }
+};
+
+window.addCustomCat = function() {
+  const inp = document.getElementById('custom-inp');
+  const v = inp.value.trim();
+  if(!v || customCats.includes(v)) return;
+  customCats.push(v); inp.value='';
+  const list = document.getElementById('custom-list');
+  if(list) list.innerHTML = customCats.map((c,i)=>`<span class="cat-chip sel">${c} <span onclick="customCats.splice(${i},1);window.addCustomCat&&renderCustomList();" style="cursor:pointer;margin-left:2px;">×</span></span>`).join('');
+};
+
+function renderCustomList() {
+  const list = document.getElementById('custom-list');
+  if(list) list.innerHTML = customCats.map((c,i)=>`<span class="cat-chip sel">${c} <span onclick="customCats.splice(${i},1);renderCustomList();" style="cursor:pointer;margin-left:2px;">×</span></span>`).join('');
+}
+
+function getFinalCats() {
+  if(catMode==='library' && selLibCats.length>=2) return selLibCats;
+  if(catMode==='custom' && customCats.length>=2) return customCats;
+  return randCats(6);
+}
+
+// ── AUDIO ──
+function playTimerSound() {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    [0,0.18,0.36].forEach(offset => {
+      const osc=ctx.createOscillator(), gain=ctx.createGain();
+      osc.connect(gain); gain.connect(ctx.destination);
+      osc.frequency.value=880; osc.type='sine';
+      gain.gain.setValueAtTime(0,ctx.currentTime+offset);
+      gain.gain.linearRampToValueAtTime(0.4,ctx.currentTime+offset+0.01);
+      gain.gain.linearRampToValueAtTime(0,ctx.currentTime+offset+0.12);
+      osc.start(ctx.currentTime+offset); osc.stop(ctx.currentTime+offset+0.15);
+    });
+  } catch(e){}
+}
+
+function playUrgentBeep() {
+  try {
+    const ctx=new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain); gain.connect(ctx.destination);
+    osc.frequency.value=660; osc.type='sine';
+    gain.gain.setValueAtTime(0.15,ctx.currentTime);
+    gain.gain.linearRampToValueAtTime(0,ctx.currentTime+0.08);
+    osc.start(ctx.currentTime); osc.stop(ctx.currentTime+0.1);
+  } catch(e){}
+}
+
+// ── OFFLINE MODE (unchanged) ──
+let olCustomCats = [];
+let olSetupPlayers = [];
+
+window.addOlPlayer = function() {
+  const inp=document.getElementById('ol-player-inp');
+  const name=inp.value.trim();
+  if(!name||olSetupPlayers.includes(name)||olSetupPlayers.length>=8) return;
+  olSetupPlayers.push(name); inp.value=''; renderOlSetupPlayers();
+};
+window.removeOlPlayer = function(name) { olSetupPlayers=olSetupPlayers.filter(n=>n!==name); renderOlSetupPlayers(); };
+function renderOlSetupPlayers() {
+  const el=document.getElementById('ol-player-list-setup'); if(!el) return;
+  el.innerHTML=olSetupPlayers.map(n=>`<div class="player-setup-pill"><span>${n}</span><button class="del-btn" onclick="removeOlPlayer('${n.replace(/'/g,"\\'")}')">✕</button></div>`).join('')||'<div style="font-size:13px;color:var(--text-muted);">Noch keine Spieler</div>';
+}
+window.olGenRandom=function(){olState.cats=randCats(6);renderOlCats();};
+window.toggleOlPicker=function(){const p=document.getElementById('ol-picker');const isOpen=p.style.display!=='none';p.style.display=isOpen?'none':'block';document.getElementById('ol-custom-panel').style.display='none';if(!isOpen){document.getElementById('ol-lib-grid').innerHTML=CAT_LIB.map((c,i)=>`<div class="cat-chip ${olState.selCats.includes(c)?'sel':''}" onclick="olToggleCat('${c.replace(/'/g,"\\'")}',this)">${c}</div>`).join('');}};
+window.toggleOlCustom=function(){const p=document.getElementById('ol-custom-panel');const isOpen=p.style.display!=='none';p.style.display=isOpen?'none':'block';document.getElementById('ol-picker').style.display='none';if(!isOpen)renderOlCustomList();};
+function renderOlCustomList(){document.getElementById('ol-custom-list').innerHTML=olCustomCats.map((c,i)=>`<div class="cat-chip sel">${c} <span onclick="olCustomCats.splice(${i},1);renderOlCustomList();" style="cursor:pointer;margin-left:2px;">×</span></div>`).join('');}
+window.addOlCustomCat=function(){const inp=document.getElementById('ol-custom-inp');const v=inp.value.trim();if(!v||olCustomCats.includes(v))return;olCustomCats.push(v);inp.value='';renderOlCustomList();};
+window.confirmOlCustomCats=function(){if(olCustomCats.length<2){alert('Mindestens 2 eigene Kategorien.');return;}olState.cats=[...olCustomCats];document.getElementById('ol-custom-panel').style.display='none';renderOlCats();};
+window.olToggleCat=function(cat,el){if(olState.selCats.includes(cat)){olState.selCats=olState.selCats.filter(c=>c!==cat);el.classList.remove('sel');}else{olState.selCats.push(cat);el.classList.add('sel');}};
+window.confirmOlCats=function(){if(olState.selCats.length<2){alert('Mindestens 2 Kategorien wählen.');return;}olState.cats=[...olState.selCats];document.getElementById('ol-picker').style.display='none';renderOlCats();};
+function renderOlCats(){const el=document.getElementById('ol-cats-display');el.innerHTML=olState.cats.length===0?'<span class="empty">Noch keine</span>':olState.cats.map(c=>`<span class="cat-chip sel">${c}</span>`).join('');}
+let olState={cats:[],selCats:[],timerDur:60,total:5,round:0,timerInterval:null,players:[],scores:{},currentLetter:'',roundPts:{}};
+window.startOffline=function(){if(olSetupPlayers.length<2){alert('Bitte mindestens 2 Spieler eintragen.');return;}if(olState.cats.length===0)olState.cats=randCats(6);olState.total=parseInt(document.getElementById('ol-rounds').value);olState.timerDur=parseInt(document.getElementById('ol-timer').value);olState.round=0;olState.players=[...olSetupPlayers];olState.scores={};olState.players.forEach(n=>olState.scores[n]=0);nextOlRound();};
+function nextOlRound(){olState.round++;olState.currentLetter=randLetter();document.getElementById('ol-round-badge').textContent=`Runde ${olState.round}/${olState.total}`;document.getElementById('ol-round-letter').textContent=olState.currentLetter;document.getElementById('ol-round-cats').innerHTML=olState.cats.map(c=>`<span class="cat-chip sel">${c}</span>`).join('');clearInterval(olState.timerInterval);const tNum=document.getElementById('ol-timer-num');const bar=document.getElementById('ol-bar');if(olState.timerDur>0){let t=olState.timerDur;tNum.textContent=t;tNum.className='timer-num';bar.style.width='100%';olState.timerInterval=setInterval(()=>{t--;tNum.textContent=t;tNum.className='timer-num'+(t<=10?' urgent':'');bar.style.width=(t/olState.timerDur*100)+'%';if(t>0&&t<=5)playUrgentBeep();if(t<=0){clearInterval(olState.timerInterval);tNum.textContent='Zeit!';playTimerSound();}},1000);}else{tNum.textContent='';bar.style.width='0%';}showScreen('s-ol-round');}
+window.endOlRound=function(){clearInterval(olState.timerInterval);showOlScoreScreen();};
+function showOlScoreScreen(){document.getElementById('ol-score-badge').textContent=`Punkte vergeben – Runde ${olState.round}/${olState.total}`;document.getElementById('ol-score-letter').textContent=olState.currentLetter||'?';olState.roundPts={};olState.players.forEach(n=>olState.roundPts[n]=0);renderOlSteppers();showScreen('s-ol-score');}
+function renderOlSteppers(){const players=olState.players||[];let html='<div class="card" style="margin-bottom:8px;"><div class="label">Punkte pro Spieler eintragen</div>';players.forEach(pname=>{const safeid=pname.replace(/\W/g,'_');html+=`<div class="row" style="gap:8px;"><div style="flex:1;font-size:14px;font-weight:500;">${pname}</div><div class="pts-stepper"><button class="stepper-btn" onclick="olStepPts('${pname.replace(/'/g,"\\'")}', -5)">−</button><div class="stepper-val zero" id="olpts-${safeid}">0</div><button class="stepper-btn" onclick="olStepPts('${pname.replace(/'/g,"\\'")}', 5)">+</button></div></div>`;});html+='</div>';html+=`<div class="card" style="margin-bottom:8px;background:var(--surface2);"><div class="label">Gesamtstand vor dieser Runde</div>${players.map(n=>`<div class="row"><span style="font-size:14px;">${n}</span><span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">${olState.scores[n]||0} Pts</span></div>`).join('')}</div>`;document.getElementById('ol-score-content').innerHTML=html;}
+window.olStepPts=function(pname,delta){if(!olState.roundPts)olState.roundPts={};const cur=olState.roundPts[pname]||0;const next=Math.max(0,cur+delta);olState.roundPts[pname]=next;const safeid=pname.replace(/\W/g,'_');const el=document.getElementById('olpts-'+safeid);if(el){el.textContent=next;el.className='stepper-val'+(next===0?' zero':'');}};
+window.confirmOlScores=function(){const players=olState.players||[];players.forEach(pname=>{olState.scores[pname]=(olState.scores[pname]||0)+(olState.roundPts[pname]||0);});if(olState.round<olState.total){nextOlRound();}else{showOlEnd();}};
+function showOlEnd(){const scores=olState.scores||{};const sorted=Object.entries(scores).sort((a,b)=>b[1]-a[1]);const[winnerName,winnerPts]=sorted[0]||['?',0];document.getElementById('ol-winner-name').textContent=winnerName+' gewinnt! 🎉';document.getElementById('ol-winner-pts').textContent=winnerPts+' Punkte';document.getElementById('ol-final-board').innerHTML=sorted.map(([name,pts],i)=>`<div class="scoreboard-row"><span class="rank">${i+1}</span><span style="flex:1;">${name}</span><span style="font-family:'Syne',sans-serif;font-weight:700;color:var(--orange);">${pts} Pts</span></div>`).join('');showScreen('s-ol-end');}
+
+// Init
+setCatMode('random');
+</script>
+</body>
+</html>
